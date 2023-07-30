@@ -6,7 +6,7 @@ import { addressPoints } from "./addressPoints";
 
 export default function Map() {
   useEffect(() => {
-    var map = L.map("map").setView([55.796391, 49.108891], 12);
+    var map = L.map("map", { attributionControl:false }).setView([55.796391, 49.108891], 12);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
