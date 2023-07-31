@@ -8,19 +8,16 @@ export default function Map() {
   useEffect(() => {
     var map = L.map("map", { attributionControl:false }).setView([55.796391, 49.108891], 12);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    L.tileLayer('http://tile2.maps.2gis.com/tiles?x={x}&y={y}&z={z}').addTo(map);
 
     const points = addressPoints
       ? addressPoints.map((p) => {
           return [p[0], p[1]];
-        })
+        }) 
       : [];
 
-    L.heatLayer(points).addTo(map);
+    //L.heatLayer(points).addTo(map);
   }, []);
 
-  return <div id="map" style={{ height: "100vh" }}></div>;
+  return <div  id="map" style={{ height: "100vh", filter: "grayscale(90%)"}}></div>;
 }
