@@ -1,9 +1,24 @@
-### Installation:
+# priceheatmaps
 
-- Clone the repository from GitHub: git clone
-- Install dependencies: npm install
+## Project setup
+```
+npm install
+```
 
-### Usage:
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
 
-- Run the application: npm start
-- Open your web browser and go to: http://localhost:3000
+### Compiles and minifies for production
+```
+npm run build
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
