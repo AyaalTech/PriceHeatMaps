@@ -1,4 +1,4 @@
-# priceheatmaps
+# heatpricemaps
 
 ## Project setup
 ```
