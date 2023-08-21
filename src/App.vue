@@ -5,6 +5,8 @@
     :loadTilesWhileInteracting="true"
     style="height: 100vh"
   >
+    <fullscreen-control :fullscreencontrol="fullscreencontrol" />
+
     <ol-view
       ref="view"
       :center="center"
@@ -35,6 +37,7 @@
 </template>
 
 <script setup>
+import FullscreenControl from "./components/FullscreenControl.vue";
 import { ref, inject } from "vue";
 import { fromLonLat } from "ol/proj";
 
@@ -45,9 +48,6 @@ const rotation = ref(0);
 const format = inject("ol-format");
 const kml = new format.KML({ extractStyles: false });
 const heatmapWeight = function (feature) {
-  // 2012_Earthquakes_Mag5.kml stores the magnitude of each earthquake in a
-  // standards-violating <magnitude> tag in each Placemark.  We extract it from
-  // the Placemark's name instead.
   const name = feature.get("name");
   const magnitude = parseFloat(name.substr(2));
   return magnitude - 5;
