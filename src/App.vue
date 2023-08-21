@@ -36,10 +36,11 @@
 
 <script setup>
 import { ref, inject } from "vue";
+import { fromLonLat } from "ol/proj";
 
-const center = ref([101.97, 4.21]);
-const projection = ref("EPSG:4326");
-const zoom = ref(5);
+const center = ref(fromLonLat([49.12, 55.78]));
+const projection = ref("EPSG:3857");
+const zoom = ref(13);
 const rotation = ref(0);
 const format = inject("ol-format");
 const kml = new format.KML({ extractStyles: false });
