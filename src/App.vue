@@ -16,7 +16,9 @@
     />
 
     <ol-tile-layer>
-      <ol-source-osm />
+      <ol-source-xyz
+        url="https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+      />
     </ol-tile-layer>
 
     <ol-heatmap-layer
@@ -24,13 +26,9 @@
       :blur="20"
       :radius="20"
       :weight="heatmapWeight"
-      :zIndex="1"
+      :zIndex="10"
     >
-      <ol-source-vector
-        ref="earthquakes"
-        url="https://raw.githubusercontent.com/openlayers/openlayers/main/examples/data/kml/2012_Earthquakes_Mag5.kml"
-        :format="kml"
-      >
+      <ol-source-vector :features="geojsonData" :format="geojson">
       </ol-source-vector>
     </ol-heatmap-layer>
   </ol-map>
@@ -41,16 +39,20 @@ import FullscreenControl from "./components/FullscreenControl.vue";
 import { ref, inject } from "vue";
 import { fromLonLat } from "ol/proj";
 
+const format = inject("ol-format");
+const geojson = new format.GeoJSON({ extractStyles: false });
 const center = ref(fromLonLat([49.12, 55.78]));
 const projection = ref("EPSG:3857");
 const zoom = ref(13);
 const rotation = ref(0);
-const format = inject("ol-format");
-const kml = new format.KML({ extractStyles: false });
+
 const heatmapWeight = function (feature) {
-  const name = feature.get("name");
-  const magnitude = parseFloat(name.substr(2));
-  return magnitude - 5;
+  const properties = feature.getProperties();
+  const price = parseFloat(properties.price);
+
+  const scaleFactor = 0.5;
+
+  return price * scaleFactor;
 };
 </script>
 
