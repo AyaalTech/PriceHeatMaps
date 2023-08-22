@@ -12,6 +12,8 @@
       :center="center"
       :rotation="rotation"
       :zoom="zoom"
+      :minZoom="minZoom"
+      :maxZoom="maxZoom"
       :projection="projection"
     />
 
@@ -23,14 +25,14 @@
 
     <ol-heatmap-layer
       title="heatmap"
-      :blur="20"
+      :blur="1"
       :radius="20"
       :weight="heatmapWeight"
       :zIndex="10"
     >
       <ol-source-vector
         ref="priceheatmap"
-        url="https://raw.githubusercontent.com/SawMassacre/PriceHeatMaps/131bbdf9c87f275d5745f8e4e62179cc9af64545/src/data.geojson"
+        url="https://raw.githubusercontent.com/SawMassacre/PriceHeatMaps/446d57e44f9c9a357d329f624cdede1b3ad6dc80/src/averageprices.geojson"
         :format="geojson"
       >
       </ol-source-vector>
@@ -46,6 +48,8 @@ import { fromLonLat } from "ol/proj";
 const center = ref(fromLonLat([49.12, 55.78]));
 const projection = ref("EPSG:3857");
 const zoom = ref(13);
+const minZoom = ref(13);
+const maxZoom = ref(16);
 const rotation = ref(0);
 
 const format = inject("ol-format");
@@ -53,9 +57,9 @@ const geojson = new format.GeoJSON({ extractStyles: false });
 
 const heatmapWeight = function (feature) {
   const properties = feature.getProperties();
-  const price = parseFloat(properties.price);
+  const price = parseFloat(properties.averagePrice);
 
-  const scaleFactor = 0.000000002;
+  const scaleFactor = 0.00000001;
 
   return price * scaleFactor;
 };
