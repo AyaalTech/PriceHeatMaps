@@ -1,83 +1,103 @@
 <template>
-  <ol-map
-    ref="map"
-    :loadTilesWhileAnimating="true"
-    :loadTilesWhileInteracting="true"
-    style="height: 100vh"
-  >
-    <fullscreen-control :fullscreencontrol="fullscreencontrol" />
-
-    <ol-view
-      ref="view"
-      :center="center"
-      :rotation="rotation"
-      :zoom="zoom"
-      :minZoom="minZoom"
-      :maxZoom="maxZoom"
-      :projection="projection"
-    />
-
-    <ol-tile-layer>
-      <ol-source-xyz
-        url="https://{a-c}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-      />
-    </ol-tile-layer>
-
-    <ol-heatmap-layer
-      title="heatmap"
-      :blur="1"
-      :radius="20"
-      :weight="heatmapWeight"
-      :zIndex="10"
-    >
-      <ol-source-vector
-        ref="priceheatmap"
-        url="https://raw.githubusercontent.com/SawMassacre/PriceHeatMaps/446d57e44f9c9a357d329f624cdede1b3ad6dc80/src/averageprices.geojson"
-        :format="geojson"
-      >
-      </ol-source-vector>
-    </ol-heatmap-layer>
-  </ol-map>
+  <div>
+    <svg
+      id="heatmap-svg"
+      :width="width"
+      :height="height"
+      viewBox="0 0 1000 1000"
+      style="
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        height: 1000px;
+        width: 1000px;
+      "
+      ref="svg"
+    ></svg>
+    <button @click="saveSvgAsImage" style="z-index: 100; position: absolute">
+      Save Map as Image
+    </button>
+  </div>
 </template>
 
-<script setup>
-import FullscreenControl from "./components/FullscreenControl.vue";
-import { ref, inject } from "vue";
-import { fromLonLat } from "ol/proj";
+<script>
+import TemperatureMap from "./temperatureMap.js";
 
-const center = ref(fromLonLat([49.12, 55.78]));
-const projection = ref("EPSG:3857");
-const zoom = ref(13);
-const minZoom = ref(13);
-const maxZoom = ref(16);
-const rotation = ref(0);
+export default {
+  data() {
+    return {
+      height: 1000,
+      width: 1000,
+      arr: [],
+    };
+  },
+  mounted() {
+    this.generateRandomData();
+    this.run();
+  },
+  methods: {
+    generateRandomData() {
+      for (let counter = 0; counter < 13; counter = counter + 1) {
+        const x = parseInt((Math.random() * 100000) % this.width, 10);
+        const y = parseInt((Math.random() * 100000) % this.height, 10);
+        let v = (Math.random() * 100) / 2;
 
-const format = inject("ol-format");
-const geojson = new format.GeoJSON({ extractStyles: false });
+        if (Math.random() > 0.5) {
+          v = -v;
+        }
+        if (Math.random() > 0.5) {
+          v = v + 30;
+        }
 
-const heatmapWeight = function (feature) {
-  const properties = feature.getProperties();
-  const price = parseFloat(properties.averagePrice);
+        this.arr.push({ x: x, y: y, value: v });
+      }
+    },
+    run() {
+      const svg = this.$refs.svg;
+      const drw0 = new TemperatureMap(svg);
 
-  const scaleFactor = 0.00000001;
+      drw0.setPoints(this.arr, this.width, this.height);
+      drw0.drawFull(true, function () {
+        /* Do nothing when done */
+      });
+    },
+    saveSvgAsImage() {
+      // Get the SVG element
+      console.log("Saving SVG as image...");
+      const svgElement = this.$refs.svg;
 
-  return price * scaleFactor;
+      // Serialize the SVG to a string
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svgElement);
+
+      // Construct a data URL from the SVG string
+      const svgDataUrl =
+        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgString);
+
+      // Create a link element
+      const downloadLink = document.createElement("a");
+      downloadLink.href = svgDataUrl;
+      downloadLink.download = "map.svg";
+
+      // Append the link to the body
+      document.body.appendChild(downloadLink);
+
+      // Trigger a click event on the link
+      downloadLink.click();
+
+      // Remove the link from the body
+      document.body.removeChild(downloadLink);
+    },
+  },
 };
 </script>
 
-<style>
-.overlay-content {
-  background: red !important;
-  color: white;
-  box-shadow: 0 5px 10px rgb(2 2 2 / 20%);
-  padding: 10px 20px;
-  font-size: 16px;
-}
-
-html,
+<style scoped>
 body {
-  height: 100%;
   margin: 0;
-  padding: 0;
+}
+canvas {
+  width: 100%;
+  height: 100%;
 }
 </style>
